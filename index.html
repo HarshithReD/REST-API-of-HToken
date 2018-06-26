@@ -1,0 +1,382 @@
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/truffle-contract@3.0.5/dist/truffle-contract.js"></script>
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script type="text/javascript" src="https://cdn.bootcss.com/bignumber.js/7.2.1/bignumber.js"></script>
+     
+<body>
+	<div class="Tokens">
+		<!-- //transfer token -->
+		<h3>Transfer Token</h3><br>
+		<input type="text" placeholder="Enter Recipients address" id="rec_address"><br>
+		<input type="text" placeholder="Enter the amount" id="trans_amount"><br>
+		<input type="button" value="Transfer" id="trans_button"><br>
+		<!-- buy token -->
+		<h3>Buy Token</h3><br>
+		<input type="text" placeholder="Enter the amount" id="buy_token_amount"><br>
+		<input type="button" value="Buy Token" id="buy_token_button"><br>
+		<!-- sell token -->
+		<h3>Sell Token</h3><br>
+		<input type="text" placeholder="Enter the amount" id="sell_token_amount"><br>
+		<input type="button" value="Sell Token" id="sell_token_button"><br>
+		<!-- check balanceof token -->
+		<div id="show_token_balance"><label>Current Token Balance</label><div id="token_amount"></div></div>
+
+
+	</div>
+	<div class="ether">
+		<!-- deposit ether -->
+		<h3>Deposit Ether</h3><br>
+		<input type="text" placeholder="Enter the amount" id="deposit_ether_amount"><br>
+		<input type="button" value="Deposit Ether" id="deposit_ether_button"><br>
+		<!-- withdraw ether -->
+		<h3>Withdraw Ether</h3><br>
+		<input type="text" placeholder="Enter the amount" id="withdraw_ether_amount"><br>
+		<input type="button" value="Withdraw Ether" id="withdraw_ether_button"><br>
+		<div id="show_ether_balance"><label>Current Ether Balance</label><div id="ether_amount"></div></div>
+		
+	</div>
+	<div class="allowances">
+		<!-- create allowances -->
+		<h3>Create allowances</h3><br>
+		<input type="text" placeholder="Enter  address" id="create_allow_address"><br>
+		<input type="text" placeholder="Enter the amount" id="create_allow_amount"><br>
+		<input type="button" value="Create allowance" id="create_allow_button"><br>
+		<!-- pay allowances -->
+		<h3>Pay allowances</h3><br>
+		<input type="text" placeholder="Enter  address" id="pay_allow_address"><br>
+		<input type="text" placeholder="Enter the amount" id="pay_allow_amount"><br>
+		<input type="button" value="Pay allowance" id="pay_allow_button"><br>
+	</div>
+	<div class="admin">
+		<!-- mint tokens -->
+		<h3>Mint Tokens</h3><br>
+		<input type="text" placeholder="Enter the amount" id="mint_token_amount"><br>
+		<input type="button" value="Mint Token" id="mint_token_button"><br>
+		<!-- burn tokens -->
+		<h3>burn Token</h3><br>
+		<input type="text" placeholder="Enter the amount" id="burn_token_amount"><br>
+		<input type="button" value="Burn Token" id="burn_token_button"><br>
+		<!-- destroy token -->
+		<h3>destroy Token</h3><br>
+		
+		<input type="button" value="Destroy Token" id="destroy_token_button"><br>
+		<!-- set current price -->
+		<h3>Sell Token</h3><br>
+		<input type="text" placeholder="Enter the Price" id="set_cur_price"><br>
+		<input type="button" value="Set Current price" id="set_cur_price_button"><br>
+
+	</div>
+<script>
+	var contract_instance,account;
+	setInterval(function(){
+if (typeof web3 !== 'undefined') {
+  web3 = new Web3(window.web3.currentProvider);
+} else {
+  // set the provider you want from Web3.providers
+  web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
+
+var abi=
+	[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "burn",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "buyTokens",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "createAllowance",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "depositEther",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "destroyToken",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "mint",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "payAllowances",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "sellTokens",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "price",
+				"type": "uint256"
+			}
+		],
+		"name": "setCurPrice",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "transfers",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "amountInWei",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawEther",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"name": "price",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "admin",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_of",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "checkBalance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "checkBalanceEther",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "curprice",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "total_tokens",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+var contract_address="0xc40d2d7736422e67860fd0cda9c047d2cb728466";
+	 contract_instance=web3.eth.contract(abi).at(contract_address);
+web3.eth.getAccounts(function(error, accounts) {
+    account=accounts;
+});
+},30);
+
+
+	
+	
+	setInterval(function(){
+	
+	contract_instance.checkBalance(function(err,res){$('#token_amount').html(res.c[0])});
+	
+	contract_instance.checkBalanceEther(function(err,res){$('#ether_amount').html(res.c[0])});
+	
+	},30);
+
+
+
+
+
+</script>
+<script type="text/javascript" src="http://localhost/tokencreation/token_operations.js"></script>
+<script type="text/javascript" src="http://localhost/tokencreation/ether_operations.js"></script>
+<script type="text/javascript" src="http://localhost/tokencreation/allowance_operations.js"></script>
+<!-- <script type="text/javascript" src="http://localhost/tokencreation/admin_operations.js"></script> -->
